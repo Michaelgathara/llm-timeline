@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TimelineNode, timelineData, timelineBranches } from '../data/timelineData';
+import { TimelineNode, timelineData, timelineBranches } from './timelineData';
 
 const Timeline: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<TimelineNode | null>(null);
@@ -48,6 +48,11 @@ const Timeline: React.FC = () => {
     });
     
     // Adjust to avoid overlaps (simple algorithm, could be improved)
+    /*
+      - Random jittering
+      - Fixed number of passes
+      - Simple overlap detection
+    */
     for (let i = 0; i < 3; i++) { // Several passes to resolve complex overlaps
       timelineData.forEach(node => {
         const nodePos = positions[node.id];

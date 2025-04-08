@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import Timeline from '../components/Timeline';
+import Timeline from '../data/Timeline';
 import dynamic from 'next/dynamic';
 
 const TimelineVisualization = dynamic(

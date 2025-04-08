@@ -367,6 +367,7 @@ export interface TimelineNode {
     }
   ];
   
+  // TODO: Look into more colors cause some of these are lowkey repeats on low contrast screens
   export const timelineBranches = [
     { id: "foundation", name: "Foundation", color: "#4285F4" }, // Google Blue
     { id: "decoder-only", name: "Decoder-Only Models", color: "#EA4335" }, // Red
