@@ -197,7 +197,7 @@ const Timeline: React.FC = () => {
         <div className="flex justify-between items-center mb-2">
           <div className='flex flex-col items-left mb-1'>
             <h2 className="text-2xl font-bold">Timeline Color Key</h2>
-            <p className='text-gray-400'>Version: 0.24.0</p>
+            <p className='text-gray-400'>Version: 0.24.0 (Work in Progress)</p>
           </div>
           <Link href="/about" className="text-blue-600 hover:text-blue-800 transition">
             About this Timeline &rarr;
