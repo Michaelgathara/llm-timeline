@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { TimelineNode, timelineData, timelineBranches } from '../data/timelineData';
 
 const Timeline: React.FC = () => {
@@ -192,9 +193,13 @@ const Timeline: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
-      {/* duplicated code with timevisualizer too, probably want send this over to a new file */}
       <div className="bg-white shadow-md p-4 mb-4 rounded-lg">
-        <h2 className="text-2xl font-bold mb-2">Key</h2>
+        <div className="flex justify-between items-center mb-2">
+          <h2 className="text-2xl font-bold">Timeline Color Key</h2>
+          <Link href="/about" className="text-blue-600 hover:text-blue-800 transition">
+            About this Timeline
+          </Link>
+        </div>
         <div className="flex flex-wrap gap-3 items-center">
           {timelineBranches.map(branch => (
             <div key={branch.id} className="flex items-center">
