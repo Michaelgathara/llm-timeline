@@ -95,8 +95,9 @@ const TimelineVisualization: React.FC = () => {
   
   return (
     <div className="flex flex-col w-full">
+      {/* duplicated code with timevisualizer too, probably want send this over to a new file */}
       <div className="bg-white shadow-md p-4 mb-4 rounded-lg">
-        <h2 className="text-2xl font-bold mb-2">LLM Evolution Timeline</h2>
+        <h2 className="text-2xl font-bold mb-2">Key</h2>
         <div className="flex flex-wrap gap-3 items-center">
           {timelineBranches.map(branch => (
             <div key={branch.id} className="flex items-center">

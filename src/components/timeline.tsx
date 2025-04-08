@@ -12,7 +12,7 @@ const Timeline: React.FC = () => {
       if (typeof window !== 'undefined') {
         setDimensions({
           width: Math.max(1200, window.innerWidth - 100),
-          height: Math.max(3000, window.innerHeight * 3)
+          height: Math.max(1600, window.innerHeight * 2)
         });
       }
     };
@@ -25,7 +25,6 @@ const Timeline: React.FC = () => {
     };
   }, []);
 
-  // Calculate node positions
   const nodePositions = React.useMemo(() => {
     const positions: Record<string, { x: number; y: number }> = {};
     const YEAR_HEIGHT = 200;
@@ -157,23 +156,24 @@ const Timeline: React.FC = () => {
   };
 
   return (
-    <div className="timeline-container relative">
-      <div className="timeline-header fixed w-full top-0 z-10 bg-gray-100 p-4 shadow-md">
-        <h1 className="text-3xl font-bold mb-3">Large Language Model Evolution Timeline</h1>
-        <div className="flex flex-wrap gap-4 mb-2">
+    <div className="flex flex-col w-full">
+      {/* duplicated code with timevisualizer too, probably want send this over to a new file */}
+      <div className="bg-white shadow-md p-4 mb-4 rounded-lg">
+        <h2 className="text-2xl font-bold mb-2">Key</h2>
+        <div className="flex flex-wrap gap-3 items-center">
           {timelineBranches.map(branch => (
             <div key={branch.id} className="flex items-center">
               <div 
-                className="w-4 h-4 rounded-full mr-2" 
+                className="w-3 h-3 rounded-full mr-1" 
                 style={{ backgroundColor: branch.color }}
               />
-              <span>{branch.name}</span>
+              <span className="text-sm">{branch.name}</span>
             </div>
           ))}
         </div>
       </div>
       
-      <div className="pt-32 pb-20 overflow-x-auto">
+      <div className="pt-8 pb-8 overflow-x-auto overflow-y-auto">
         <svg 
           ref={svgRef}
           width={dimensions.width} 

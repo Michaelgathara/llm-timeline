@@ -16,7 +16,7 @@ export default function Home() {
     <main className="flex min-h-screen flex-col">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-gray-50 to-white"></div>
       
-      <header className="sticky top-0 z-50 bg-white shadow-md py-4">
+      {/* <header className="sticky top-0 z-50 bg-white shadow-md py-4">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold">Large Language Model Evolution</h1>
@@ -36,7 +36,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
       
       <div className="container mx-auto px-4 py-8">
         {viewMode === 'svg' ? (
@@ -50,7 +50,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <p className="text-center text-gray-400 text-sm mt-2">
             <p className="text-center text-gray-400 text-sm mt-2">
-              &copy; {new Date().getFullYear()} <a href='https://michaelgathara.com' target='_blank'>Michael Gathara</a>
+              &copy; {new Date().getFullYear()} <a className="underline" href='https://michaelgathara.com' target='_blank'>Michael Gathara</a>
             </p>
           </p>
         </div>
