@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TimelineNode, timelineData, timelineBranches } from './timelineData';
+import { TimelineNode, timelineData, timelineBranches } from '../data/timelineData';
 
 const Timeline: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<TimelineNode | null>(null);
