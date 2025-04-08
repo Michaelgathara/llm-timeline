@@ -2,7 +2,7 @@
 
 An interactive visualization of the evolution of Large Language Models from the Transformer architecture in 2017 to the present day.
 
-![LLM Timeline Screenshot](https://via.placeholder.com/800x400?text=LLM+Timeline+Screenshot)
+![LLM Timeline Screenshot](./readme_images/main_page.png)
 
 ## Overview
 
