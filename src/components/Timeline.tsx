@@ -47,28 +47,58 @@ const Timeline: React.FC = () => {
       positions[node.id] = { x: baseX, y: y };
     });
     
-    // Adjust to avoid overlaps (simple algorithm, could be improved)
-    /*
-      - Random jittering
-      - Fixed number of passes
-      - Simple overlap detection
-    */
-    for (let i = 0; i < 3; i++) { // Several passes to resolve complex overlaps
-      timelineData.forEach(node => {
-        const nodePos = positions[node.id];
-        const overlappingNodes = timelineData.filter(other => 
-          other.id !== node.id &&
-          other.branch === node.branch &&
-          Math.abs(positions[other.id].y - nodePos.y) < 50
-        );
+    const resolveOverlaps = () => {
+      const REPULSION_STRENGTH = 0.5;
+      const MAX_ITERATIONS = 50;
+      const CONVERGENCE_THRESHOLD = 1;
+      
+      for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
+        let maxMovement = 0;
         
-        if (overlappingNodes.length > 0) {
-          // Adjust x position slightly
-          nodePos.x += MIN_X_SPACING * (0.3 - Math.random() * 0.6);
+        timelineData.forEach(node => {
+          const nodePos = positions[node.id];
+          let dx = 0;
+          
+          // Check overlaps with all other nodes in similar vertical position
+          timelineData.forEach(other => {
+            if (other.id === node.id) return;
+            
+            const otherPos = positions[other.id];
+            const verticalDist = Math.abs(otherPos.y - nodePos.y);
+            const horizontalDist = Math.abs(otherPos.x - nodePos.x);
+            
+            // Only consider nodes that are vertically close
+            if (verticalDist < 80) {
+              // repulsion force
+              const minDesiredDist = MIN_X_SPACING * (other.branch === node.branch ? 1.2 : 0.8);
+              
+              if (horizontalDist < minDesiredDist) {
+                const force = (minDesiredDist - horizontalDist) * REPULSION_STRENGTH;
+                dx += otherPos.x < nodePos.x ? force : -force;
+              }
+            }
+          });
+          
+          const branchIndex = timelineBranches.findIndex(b => b.id === node.branch);
+          const branchCenter = BRANCH_WIDTH * (branchIndex + 0.5);
+          const maxOffset = BRANCH_WIDTH * 0.4; // Limit movement within branch
+          
+          const oldX = nodePos.x;
+          nodePos.x = Math.max(
+            branchCenter - maxOffset,
+            Math.min(branchCenter + maxOffset, nodePos.x + dx)
+          );
+          
+          maxMovement = Math.max(maxMovement, Math.abs(nodePos.x - oldX));
+        });
+        
+        if (maxMovement < CONVERGENCE_THRESHOLD) {
+          break;
         }
-      });
-    }
-    
+      }
+    };
+      
+    resolveOverlaps();
     return positions;
   }, [dimensions.width]);
 
