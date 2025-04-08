@@ -222,7 +222,7 @@ const TimelineVisualization: React.FC = () => {
           )}
           
           <div className="flex gap-4 mt-4">
-            {selectedNodeData.parentIds?.length > 0 && (
+            {selectedNodeData.parentIds && selectedNodeData.parentIds.length > 0 && (
               <div>
                 <h4 className="font-semibold mb-1">Building On:</h4>
                 <div className="flex flex-wrap gap-1">
