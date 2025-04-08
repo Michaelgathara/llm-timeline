@@ -13,6 +13,11 @@ export default function Home() {
   const [viewMode, setViewMode] = useState<'svg' | 'react'>('svg');
 
   return (
+    <>
+    <head>
+      <title>LLM Timeline</title>
+      <meta name="description" content='LLM Timeline - Explore the LLM landscape visually'/>
+    </head>
     <main className="flex min-h-screen flex-col">
       <div className="absolute inset-0 -z-10 bg-gradient-to-b from-gray-50 to-white"></div>
       
@@ -49,12 +54,14 @@ export default function Home() {
       <footer className="bg-gray-100 py-6 mt-auto">
         <div className="container mx-auto px-4">
           <p className="text-center text-gray-400 text-sm mt-2">
-            <p className="text-center text-gray-400 text-sm mt-2">
-              &copy; {new Date().getFullYear()} <a className="underline" href='https://michaelgathara.com' target='_blank'>Michael Gathara</a>
-            </p>
+            &copy; {new Date().getFullYear()} <a className="underline" href='https://michaelgathara.com' target='_blank'>Michael Gathara</a>
+          </p>
+          <p className="text-center text-gray-400 text-sm mt-2">
+            Fully open source: <a className='underline' href='https://michaelgathara.com/git/llm-timeline' target='_blank'>Michaelgathara/llm-timeline</a>
           </p>
         </div>
       </footer>
     </main>
+    </>
   );
 }
