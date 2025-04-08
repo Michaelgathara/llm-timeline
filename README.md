@@ -1,40 +1,133 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# LLM Timeline
 
-## Getting Started
+An interactive visualization of the evolution of Large Language Models from the Transformer architecture in 2017 to the present day.
 
-First, run the development server:
+![LLM Timeline Screenshot](https://via.placeholder.com/800x400?text=LLM+Timeline+Screenshot)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Overview
+
+LLM Timeline is a web application that visually maps the development history of large language models, showing how different architectures, approaches, and innovations have built upon one another. The project aims to make the complex landscape of LLMs more accessible to researchers, developers, and AI enthusiasts.
+
+### Features
+
+- Interactive SVG-based timeline visualization
+- Color-coded branches representing different model architectures and approaches
+- Detailed node information showing each model's innovations and impact
+- Connection visualization showing how models build upon previous research
+- Links to original papers and resources
+- Responsive design for various screen sizes
+
+## Live Demo
+
+Visit [https://llmtimeline.web.app](https://llmtimeline.web.app) to see the live project.
+
+## Tech Stack
+
+- **Framework**: Next.js with TypeScript
+- **Styling**: Tailwind CSS
+- **Visualization**: SVG and React components
+- **Data**: Static TypeScript files (timelineData.ts)
+
+## Installation
+
+### Prerequisites
+
+- Node.js (v18 or newer)
+- npm or yarn
+
+### Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://michaelgathara.com/git/llm-timeline.git
+   cd llm-timeline
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## Project Structure
+
+```
+llm-timeline/
+├── components/
+│   ├── Timeline.tsx           # Main timeline visualization component
+│   └── TimelineVisualization.tsx # Alternative interactive visualization
+├── data/
+│   └── timelineData.ts        # Timeline data and branches definitions
+├── pages/
+│   ├── index.tsx              # Home page
+│   ├── _app.tsx               # Next.js application wrapper
+│   ├── _document.tsx          # Custom document component
+│   └── about.tsx              # About page
+├── styles/
+│   └── globals.css            # Global styles and Tailwind imports
+├── public/                    # Static assets
+└── README.md                  # Project documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Data Model
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+The timeline is built around two main data structures:
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+1. `TimelineNode`: Represents a significant model or advancement in LLM history
+2. `timelineBranches`: Defines the different categories and their colors
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+To add a new entry to the timeline, edit the `timelineData.ts` file and add a new object to the `timelineData` array.
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Example node structure:
+```typescript
+{
+  id: "unique-id",
+  title: "Model Name or Paper Title",
+  year: 2023,
+  month: 6, // Optional
+  description: "Brief description of the model or advancement",
+  branch: "branch-id", // Must match an id in timelineBranches
+  innovations: [
+    "Innovation 1",
+    "Innovation 2"
+  ],
+  impact: "Description of the impact", // Optional (highly recommended)
+  modelSize: "Parameter count", // Optional (highly recommended)
+  link: "URL to paper or resource", // Optional (highly recommended)
+  parentIds: ["parent-id-1", "parent-id-2"] // Optional (highly recommended), for connections
+}
+```
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions are welcome! If you'd like to add models, fix data, or improve the visualization:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+1. Fork the repository
+2. Create a new branch for your feature (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Adding New Models
 
-## Deploy on Vercel
+To add a new model to the timeline:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Edit `data/timelineData.ts`
+2. Add a new TimelineNode object to the timelineData array
+3. Ensure it has the required fields and appropriate parentIds for connections
+4. Test the visualization to ensure proper positioning and connections
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
