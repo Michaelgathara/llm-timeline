@@ -5,7 +5,7 @@ import Timeline from '../components/Timeline';
 import dynamic from 'next/dynamic';
 
 const TimelineVisualization = dynamic(
-  () => import('../components/TimelineVisualization.tsx'),
+  () => import('../components/TimelineVisualization'),
   { ssr: false }
 );
 

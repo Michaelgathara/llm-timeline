@@ -274,7 +274,7 @@ export interface TimelineNode {
       month: 3,
       description: "OpenAI's GPT-4 added vision input and demonstrated improved reasoning and knowledge.",
       branch: "multimodal",
-      parentIds: ["instructgpt"],
+      parentIds: ["instructgpt", "gpt3"],
       innovations: [
         "Multimodal input (text and images)",
         "Significantly improved reasoning",
