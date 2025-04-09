@@ -1,3 +1,9 @@
+// TODO: Think about storing this in a better manner
+/**
+ * JSON Database, potentially 
+ * This already runs on Firebase so could use Firestore or really any NoSQL Document Database. 
+ * Will probably move this to Firestore soon, will need to think about how to get contributors to add data to firestore
+ */
 export interface TimelineNode {
     id: string;
     title: string;
@@ -203,6 +209,174 @@ export interface TimelineNode {
       modelSize: "70B parameters",
       impact: "Shifted industry focus from just increasing parameters to better data utilization.",
       link: "https://arxiv.org/abs/2203.15556"
+    },
+    {
+      id: "chatgpt",
+      title: "ChatGPT: Conversational Interface",
+      year: 2022,
+      month: 11,
+      description: "OpenAI's ChatGPT brought conversational AI to the mainstream with an intuitive interface on top of GPT-3.5.",
+      branch: "alignment",
+      parentIds: ["instructgpt"],
+      innovations: [
+        "Conversation-based interface for non-experts",
+        "Improved instruction following",
+        "Human preference alignment",
+        "Memory within conversation context"
+      ],
+      impact: "Became the fastest-growing consumer application in history, introducing AI to the general public.",
+      link: "https://openai.com/blog/chatgpt"
+    },
+    {
+      id: "constitutional-ai",
+      title: "Constitutional AI",
+      year: 2022,
+      month: 12,
+      description: "Anthropic's approach to alignment using AI feedback rather than direct human feedback.",
+      branch: "alignment",
+      parentIds: ["instructgpt"],
+      innovations: [
+        "Self-supervision for harmful queries",
+        "Constitutional principles for alignment",
+        "Reduced need for human labelers on sensitive content"
+      ],
+      impact: "Provided a scalable alternative to RLHF requiring less direct human feedback on harmful content.",
+      link: "https://arxiv.org/abs/2212.08073"
+    },
+    {
+      id: "mamba",
+      title: "Mamba: State Space Models",
+      year: 2023,
+      month: 12,
+      description: "A new architecture using selective state space models as an alternative to attention mechanisms.",
+      branch: "foundation",
+      parentIds: ["transformer"],
+      innovations: [
+        "Linear scaling with sequence length (vs. quadratic for attention)",
+        "Selective state space sequence modeling",
+        "Hardware-aware algorithm design"
+      ],
+      modelSize: "Various (2.8B for Mamba-2.8B)",
+      impact: "Potentially more efficient handling of very long sequences compared to attention-based models.",
+      link: "https://arxiv.org/abs/2312.00752"
+    },
+    {
+      id: "dalle3",
+      title: "DALL-E 3",
+      year: 2023,
+      month: 10,
+      description: "OpenAI's third-generation text-to-image model with significantly improved prompt following.",
+      branch: "multimodal",
+      parentIds: ["gpt4"],
+      innovations: [
+        "GPT-4 integration for prompt interpretation",
+        "High fidelity to complex text prompts",
+        "Image consistency across multiple generations"
+      ],
+      impact: "Dramatically improved ability to follow detailed prompts and generate coherent scenes.",
+      link: "https://openai.com/dall-e-3"
+    },
+    {
+      id: "gemini-nano",
+      title: "Gemini Nano: On-Device Models",
+      year: 2023,
+      month: 12,
+      description: "Google's efficient on-device variant of Gemini designed for mobile and edge computing.",
+      branch: "decoder-only",
+      parentIds: ["gemini"],
+      innovations: [
+        "Highly optimized for mobile hardware",
+        "Privacy-preserving on-device inference",
+        "Efficient multimodal understanding"
+      ],
+      modelSize: "1.8B and 3.25B parameters",
+      impact: "Enabled powerful AI capabilities directly on smartphones without cloud dependency.",
+      link: "https://deepmind.google/technologies/gemini/"
+    },
+    {
+      id: "megatron",
+      title: "Megatron-Turing NLG",
+      year: 2021,
+      month: 10,
+      description: "Microsoft and NVIDIA's massive language model trained on supercomputing infrastructure.",
+      branch: "decoder-only",
+      parentIds: ["gpt3"],
+      innovations: [
+        "Scaled training infrastructure",
+        "3D parallelism for efficient training",
+        "Mixed-precision optimization"
+      ],
+      modelSize: "530B parameters",
+      impact: "Pushed the boundaries of model scaling while improving training efficiency.",
+      link: "https://developer.nvidia.com/blog/using-deepspeed-and-megatron-to-train-megatron-turing-nlg-530b-the-worlds-largest-and-most-powerful-generative-language-model/"
+    },
+    {
+      id: "palm2",
+      title: "PaLM 2",
+      year: 2023,
+      month: 5,
+      description: "Google's more efficient follow-up to PaLM with improved multilingual and reasoning capabilities.",
+      branch: "decoder-only",
+      parentIds: ["palm"],
+      innovations: [
+        "Compute-optimal scaling",
+        "Enhanced multilingual capabilities",
+        "Improved reasoning across domains",
+        "Better model efficiency"
+      ],
+      modelSize: "Undisclosed (smaller than PaLM but more capable)",
+      impact: "Powered Google's Bard and formed the foundation for Google's AI services.",
+      link: "https://ai.google/discover/palm2/"
+    },
+    {
+      id: "claude1",
+      title: "Claude 1",
+      year: 2023,
+      month: 3,
+      description: "Anthropic's first commercial large language model using Constitutional AI approach.",
+      branch: "decoder-only",
+      parentIds: ["constitutional-ai"],
+      innovations: [
+        "Constitutional AI alignment",
+        "Enhanced harmlessness while maintaining helpfulness",
+        "Improved instruction following"
+      ],
+      modelSize: "Undisclosed",
+      impact: "Established Anthropic as a major player in the AI safety-focused LLM space.",
+      link: "https://www.anthropic.com/index/introducing-claude"
+    },
+    {
+      id: "falcon",
+      title: "Falcon LLM",
+      year: 2023,
+      month: 9,
+      description: "UAE-based Technology Innovation Institute's open-weight models trained on clean web data.",
+      branch: "open-source",
+      parentIds: ["gpt3"],
+      innovations: [
+        "Multi-query attention for efficiency",
+        "Clean web-scale training corpus",
+        "Permissive licensing model"
+      ],
+      modelSize: "7B, 40B, and 180B parameters",
+      impact: "Provided high-quality open models with more permissive licensing than alternatives.",
+      link: "https://falconllm.tii.ae/"
+    },
+    {
+      id: "midjourney",
+      title: "Midjourney",
+      year: 2022,
+      month: 7,
+      description: "Text-to-image generation system with a focus on artistic quality and creative outputs.",
+      branch: "multimodal",
+      parentIds: ["multimodal-foundation"],
+      innovations: [
+        "Discord-based interface for accessibility",
+        "Artistic style optimization",
+        "Community-driven prompt engineering"
+      ],
+      impact: "Popularized AI image generation among artists and creative professionals.",
+      link: "https://www.midjourney.com/home/"
     },
     {
       id: "opt",
