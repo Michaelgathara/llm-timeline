@@ -348,6 +348,164 @@ export interface TimelineNode {
       link: "https://ai.meta.com/blog/meta-llama-3/"
     },
     {
+      id: "claude3",
+      title: "Claude 3 Family: Opus, Sonnet, Haiku",
+      year: 2024,
+      month: 3,
+      description: "Anthropic released the Claude 3 family with three models balancing performance and efficiency.",
+      branch: "decoder-only",
+      parentIds: ["claude2"],
+      innovations: [
+        "Significantly improved reasoning capabilities",
+        "Enhanced multimodal understanding",
+        "Better function calling and tool use",
+        "Tiered model offerings for different use cases"
+      ],
+      modelSize: "Undisclosed (estimated 100B-1T+ parameters)",
+      impact: "Set new benchmarks in reasoning and multimodal tasks while providing varied price-performance options.",
+      link: "https://www.anthropic.com/news/claude-3-family"
+    },
+    {
+      id: "gpt4o",
+      title: "GPT-4o: Omni Model",
+      year: 2024,
+      month: 8,
+      description: "OpenAI's GPT-4o ('omni') combined text, vision, and audio in a faster, cheaper model matching GPT-4 Turbo performance.",
+      branch: "multimodal",
+      parentIds: ["gpt4"],
+      innovations: [
+        "Real-time responsiveness",
+        "Native audio input/output",
+        "Improved vision capabilities",
+        "Cost-efficient multimodal processing"
+      ],
+      modelSize: "Undisclosed",
+      impact: "Democratized multimodal AI by bringing high capabilities at lower cost and latency.",
+      link: "https://openai.com/index/gpt-4o-system-card/"
+    },
+    {
+      id: "claude3_5",
+      title: "Claude 3.5: Sonnet and Haiku",
+      year: 2024,
+      month: 8,
+      description: "Anthropic's mid-cycle update adding significant reasoning improvements and extended context handling.",
+      branch: "decoder-only",
+      parentIds: ["claude3"],
+      innovations: [
+        "Enhanced logical reasoning",
+        "Improved tool use capabilities",
+        "Extended context efficiency",
+        "Better multimodal comprehension"
+      ],
+      modelSize: "Undisclosed",
+      impact: "Established new SOTA on various reasoning benchmarks while maintaining competitive pricing.",
+      link: "https://www.anthropic.com/claude/haiku"
+    },
+    {
+      id: "gpt4_turbo",
+      title: "GPT-4 Turbo with Vision",
+      year: 2023,
+      month: 11,
+      description: "OpenAI's optimized GPT-4 with vision capabilities, reduced costs, and extended context window.",
+      branch: "multimodal",
+      parentIds: ["gpt4"],
+      innovations: [
+        "128K token context window",
+        "Reduced latency and pricing",
+        "Knowledge cutoff moved to April 2023",
+        "JSON mode for structured outputs"
+      ],
+      modelSize: "Undisclosed",
+      impact: "Made powerful multimodal AI more accessible and affordable for developers.",
+      link: "https://openai.com/blog/new-models-and-developer-products-announced-at-devday"
+    },
+    {
+      id: "mistral",
+      title: "Mistral AI Models",
+      year: 2023,
+      month: 9,
+      description: "French startup Mistral AI released efficient open-weight models rivaling much larger competitors.",
+      branch: "open-source",
+      parentIds: ["llama2"],
+      innovations: [
+        "Grouped-query attention",
+        "Sliding window attention",
+        "Mixture-of-Experts efficiency (for Mixtral)",
+        "Strong performance at smaller parameter counts"
+      ],
+      modelSize: "7B and Mixtral 8x7B (MoE)",
+      impact: "Demonstrated that smaller, efficient models could rival much larger ones on many tasks.",
+      link: "https://mistral.ai/news/announcing-mistral-7b/"
+    },
+    {
+      id: "phi",
+      title: "Microsoft Phi Series",
+      year: 2023,
+      month: 9,
+      description: "Microsoft Research's small but mighty models trained primarily on synthetic data.",
+      branch: "open-source",
+      parentIds: ["llama1"],
+      innovations: [
+        "Synthetic data focused training",
+        "Extraordinary performance at extremely small scales",
+        "Textbook-quality data curation"
+      ],
+      modelSize: "1.3B to 3.8B parameters",
+      impact: "Showed that high-quality data curation can compensate for smaller model sizes.",
+      link: "https://arxiv.org/abs/2309.05463"
+    },
+    {
+      id: "claude3_7",
+      title: "Claude 3.7 Sonnet",
+      year: 2025,
+      month: 2,
+      description: "Anthropic's latest model with specialized 'reasoning mode' for complex problem-solving.",
+      branch: "decoder-only",
+      parentIds: ["claude3_5"],
+      innovations: [
+        "Dedicated reasoning mode for extended thinking",
+        "Improved mathematical and coding capabilities",
+        "Enhanced multimodal understanding",
+        "Better tool use and function calling"
+      ],
+      modelSize: "Undisclosed",
+      impact: "Set new benchmarks on complex reasoning tasks while maintaining competitive pricing.",
+      link: "https://www.anthropic.com/news/claude-3-7-sonnet"
+    },
+    {
+      id: "multimodal-foundation",
+      title: "CLIP: Contrastive Language-Image Pre-training",
+      year: 2021,
+      month: 2,
+      description: "OpenAI's CLIP connected text and images through contrastive learning, laying groundwork for multimodal models.",
+      branch: "multimodal",
+      parentIds: ["gpt3"],
+      innovations: [
+        "Contrastive learning between text and images",
+        "Zero-shot transfer to visual tasks",
+        "Learning from natural language supervision"
+      ],
+      impact: "Established foundation for later multimodal models by bridging language and vision.",
+      link: "https://arxiv.org/abs/2103.00020"
+    },
+    {
+      id: "sora",
+      title: "OpenAI Sora: World Simulation",
+      year: 2024,
+      month: 2,
+      description: "OpenAI's text-to-video model capable of generating physically plausible, high-fidelity videos up to 60 seconds.",
+      branch: "multimodal",
+      parentIds: ["gpt4"],
+      innovations: [
+        "Diffusion-based video generation",
+        "Physical world modeling from text descriptions",
+        "Temporal consistency across long sequences",
+        "Camera movement simulation"
+      ],
+      impact: "Demonstrated potential for AI to simulate coherent, physically plausible worlds from text.",
+      link: "https://openai.com/sora"
+    },
+    {
       id: "llama4",
       title: "LLaMA 4: Mixture-of-Experts",
       year: 2025,
