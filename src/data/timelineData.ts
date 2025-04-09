@@ -465,7 +465,7 @@ export interface TimelineNode {
       month: 7,
       description: "Anthropic launched Claude 2 with 100K token context window and Constitutional AI alignment.",
       branch: "decoder-only",
-      parentIds: ["instructgpt"],
+      parentIds: ["claude1"],
       innovations: [
         "Constitutional AI alignment approach",
         "Expanded 100K token context window"
