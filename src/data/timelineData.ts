@@ -68,11 +68,11 @@ export interface TimelineNode {
       title: "GPT-2: Scaling Up",
       year: 2019,
       month: 2,
-      description: "GPT-2 demonstrated the power of scale with 10× GPT-1's size, trained on high-quality web pages.",
+      description: "GPT-2 demonstrated the power of scale with 10x GPT-1's size, trained on high-quality web pages.",
       branch: "decoder-only",
       parentIds: ["gpt1"],
       innovations: [
-        "Scale-driven capabilities (10× parameters of GPT-1)",
+        "Scale-driven capabilities (10x parameters of GPT-1)",
         "Unsupervised multitask learning",
         "Zero-shot task transfer"
       ],
