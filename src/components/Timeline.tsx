@@ -6,7 +6,7 @@ const Timeline: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<TimelineNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 1200, height: 3000 });
+  const [dimensions, setDimensions] = useState({ width: 1200, height: 1600 });
   
   useEffect(() => {
     const updateDimensions = () => {
@@ -292,16 +292,6 @@ const Timeline: React.FC = () => {
                   className="transition-all duration-300"
                 >
                   {node.title.length > 25 ? `${node.title.substring(0, 25)}...` : node.title}
-                </text>
-                <text
-                  y={-15}
-                  x={0}
-                  dy={16}
-                  textAnchor="middle"
-                  fontSize={10}
-                  fill="#6b7280"
-                >
-                  {node.year}
                 </text>
               </g>
             );
