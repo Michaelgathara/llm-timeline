@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Timeline from '../components/Timeline';
 import dynamic from 'next/dynamic';
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 const TimelineVisualization = dynamic(
   () => import('../components/TimelineVisualization'),
@@ -61,6 +62,7 @@ export default function Home() {
           </p>
         </div>
       </footer>
+      <GoogleAnalytics gaId="G-4ZCY75KKYB" />
     </main>
     </>
   );
