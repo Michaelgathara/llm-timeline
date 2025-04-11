@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Timeline from '../components/Timeline';
+import CompanyTimeline from 'src/components/CompanyTimeline';
 import dynamic from 'next/dynamic';
 import { GoogleAnalytics } from '@next/third-parties/google'
 
@@ -47,6 +48,7 @@ export default function Home() {
       <div className="container mx-auto px-4 py-8">
         {viewMode === 'svg' ? (
           <Timeline />
+          // <CompanyTimeline />
         ) : (
           <TimelineVisualization />
         )}
