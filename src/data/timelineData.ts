@@ -21,7 +21,7 @@ export interface TimelineNode {
   export const timelineData: TimelineNode[] = [
     {
       id: "transformer",
-      title: "Transformer: \"Attention Is All You Need\"",
+      title: "\"Attention Is All You Need\"",
       year: 2017,
       month: 6,
       description: "The Transformer architecture introduced by Vaswani et al. replaced recurrent networks with self-attention mechanisms, enabling better parallelization and sequence modeling.",

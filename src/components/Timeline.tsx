@@ -26,6 +26,12 @@ const Timeline: React.FC = () => {
     };
   }, []);
 
+  // Calculate approximate text width based on title
+  const estimateTextWidth = (title: string) => {
+    // Average character width multiplied by length plus some padding
+    return Math.min(title.length * 8, 200) + 20;
+  };
+
   const nodePositions = React.useMemo(() => {
     const positions: Record<string, { x: number; y: number }> = {};
     const YEAR_HEIGHT = 200;
@@ -33,8 +39,8 @@ const Timeline: React.FC = () => {
     const YEAR_END = 2025;
     const BRANCH_WIDTH = dimensions.width / timelineBranches.length;
     const MIN_X_SPACING = 150;
-    
-    // Time-based positioning
+
+    // STEP 1: Initial time-based positioning
     timelineData.forEach(node => {
       const branchIndex = timelineBranches.findIndex(b => b.id === node.branch);
       const baseX = BRANCH_WIDTH * (branchIndex + 0.5);
@@ -48,10 +54,57 @@ const Timeline: React.FC = () => {
       positions[node.id] = { x: baseX, y: y };
     });
     
+    // STEP 2: Apply density-based adjustments
+    const applyDensityAdjustments = () => {
+      // Group nodes by year and month
+      const nodesByYear: Record<number, TimelineNode[]> = {};
+      
+      timelineData.forEach(node => {
+        if (!nodesByYear[node.year]) {
+          nodesByYear[node.year] = [];
+        }
+        nodesByYear[node.year].push(node);
+      });
+      
+      // For each year, adjust layout based on density
+      Object.entries(nodesByYear).forEach(([year, nodes]) => {
+        const numericYear = parseInt(year);
+        
+        // If we have many nodes in this year, spread them out
+        if (nodes.length > 5) {
+          // Group by month
+          const nodesByMonth: Record<number, TimelineNode[]> = {};
+          nodes.forEach(node => {
+            const month = node.month || 6; // Default to mid-year if no month
+            if (!nodesByMonth[month]) {
+              nodesByMonth[month] = [];
+            }
+            nodesByMonth[month].push(node);
+          });
+          
+          // Apply vertical staggering based on month density
+          Object.entries(nodesByMonth).forEach(([month, monthNodes]) => {
+            if (monthNodes.length > 2) {
+              // Stagger nodes within the same month
+              monthNodes.forEach((node, idx) => {
+                const offset = ((idx % 2) * 2 - 1) * 15 * (idx / 2);
+                positions[node.id].y += offset;
+              });
+            }
+          });
+        }
+      });
+    };
+    
+    // Apply density adjustments
+    applyDensityAdjustments();
+    
+    // STEP 3: Resolve overlaps with improved algorithm
     const resolveOverlaps = () => {
-      const REPULSION_STRENGTH = 0.5;
-      const MAX_ITERATIONS = 50;
-      const CONVERGENCE_THRESHOLD = 1;
+      const REPULSION_STRENGTH = 0.6; // Stronger than before
+      const MAX_ITERATIONS = 60; // More iterations
+      const CONVERGENCE_THRESHOLD = 0.5; // Stricter convergence
+      const VERTICAL_DETECTION_RANGE = 120; // Increased from 80px
       
       for (let iteration = 0; iteration < MAX_ITERATIONS; iteration++) {
         let maxMovement = 0;
@@ -59,23 +112,40 @@ const Timeline: React.FC = () => {
         timelineData.forEach(node => {
           const nodePos = positions[node.id];
           let dx = 0;
+          let dy = 0; // Also allow limited vertical adjustment
           
-          // Check overlaps with all other nodes in similar vertical position
+          // Calculate text width based on title length
+          const textWidth = estimateTextWidth(node.title);
+          
+          // Check overlaps with all other nodes
           timelineData.forEach(other => {
             if (other.id === node.id) return;
             
             const otherPos = positions[other.id];
             const verticalDist = Math.abs(otherPos.y - nodePos.y);
             const horizontalDist = Math.abs(otherPos.x - nodePos.x);
+            const otherTextWidth = estimateTextWidth(other.title);
             
-            // Only consider nodes that are vertically close
-            if (verticalDist < 80) {
-              // repulsion force
-              const minDesiredDist = MIN_X_SPACING * (other.branch === node.branch ? 1.2 : 0.8);
+            // Enhanced vertical detection range - consider more distant nodes
+            if (verticalDist < VERTICAL_DETECTION_RANGE) {
+              // Calculate minimum desired distance based on text widths
+              const minDesiredDist = Math.max(
+                MIN_X_SPACING,
+                (textWidth + otherTextWidth) / 2
+              ) * (other.branch === node.branch ? 1.2 : 0.8);
               
+              // Graduated repulsion strength based on proximity
               if (horizontalDist < minDesiredDist) {
-                const force = (minDesiredDist - horizontalDist) * REPULSION_STRENGTH;
+                // Stronger repulsion when closer
+                const proximityFactor = Math.pow(1 - (horizontalDist / minDesiredDist), 2);
+                const force = (minDesiredDist - horizontalDist) * REPULSION_STRENGTH * proximityFactor;
                 dx += otherPos.x < nodePos.x ? force : -force;
+                
+                // Apply slight vertical repulsion when very close horizontally
+                if (horizontalDist < minDesiredDist * 0.6 && verticalDist < 40) {
+                  const verticalForce = (40 - verticalDist) * 0.15;
+                  dy += otherPos.y < nodePos.y ? verticalForce : -verticalForce;
+                }
               }
             }
           });
@@ -85,12 +155,22 @@ const Timeline: React.FC = () => {
           const maxOffset = BRANCH_WIDTH * 0.4; // Limit movement within branch
           
           const oldX = nodePos.x;
+          const oldY = nodePos.y;
+          
+          // Apply horizontal movement with branch constraints
           nodePos.x = Math.max(
             branchCenter - maxOffset,
             Math.min(branchCenter + maxOffset, nodePos.x + dx)
           );
           
-          maxMovement = Math.max(maxMovement, Math.abs(nodePos.x - oldX));
+          // Apply small vertical adjustments (limited to preserve timeline structure)
+          nodePos.y = nodePos.y + Math.max(-12, Math.min(12, dy));
+          
+          // Calculate total movement for convergence check
+          maxMovement = Math.max(
+            maxMovement, 
+            Math.sqrt(Math.pow(nodePos.x - oldX, 2) + Math.pow(nodePos.y - oldY, 2))
+          );
         });
         
         if (maxMovement < CONVERGENCE_THRESHOLD) {
@@ -98,13 +178,87 @@ const Timeline: React.FC = () => {
         }
       }
     };
-      
+    
     resolveOverlaps();
     return positions;
   }, [dimensions.width]);
 
-  // Draw connections between nodes
+  // Draw connections between nodes with improved path routing
   const connections = React.useMemo(() => {
+    // Helper function to create smart paths between nodes
+    const createSmartPath = (parent: { x: number, y: number }, child: { x: number, y: number }, 
+                            parentId: string, childId: string): string => {
+      const midY = (parent.y + child.y) / 2;
+      const dx = child.x - parent.x;
+      const dy = child.y - parent.y;
+      let curve = Math.min(Math.abs(dx) * 0.5, Math.abs(dy) * 0.5) * Math.sign(dx);
+      
+      // Check for nodes that might be in the path
+      const potentialObstacles = timelineData.filter(node => {
+        // Skip if this is one of our connected nodes
+        if (node.id === parentId || node.id === childId) return false;
+        
+        // Skip if directly related to our connected nodes (should have its own connection)
+        if (node.parentIds?.includes(parentId) || node.parentIds?.includes(childId)) return false;
+        
+        const nodePos = nodePositions[node.id];
+        if (!nodePos) return false;
+        
+        // Check if node is between parent and child nodes (horizontally and vertically)
+        const inXRange = (nodePos.x > Math.min(parent.x, child.x) - 30) && 
+                         (nodePos.x < Math.max(parent.x, child.x) + 30);
+        const inYRange = (nodePos.y > Math.min(parent.y, child.y) - 20) && 
+                         (nodePos.y < Math.max(parent.y, child.y) + 20);
+        
+        if (!inXRange || !inYRange) return false;
+        
+        // Approximate check for proximity to the path
+        // Calculate closest point on line segment
+        const lenSquared = dx*dx + dy*dy;
+        if (lenSquared === 0) return false; // Parent and child at same position
+        
+        const t = Math.max(0, Math.min(1, 
+          ((nodePos.x - parent.x) * dx + (nodePos.y - parent.y) * dy) / lenSquared
+        ));
+        
+        const projX = parent.x + t * dx;
+        const projY = parent.y + t * dy;
+        const distance = Math.sqrt(
+          Math.pow(nodePos.x - projX, 2) + Math.pow(nodePos.y - projY, 2)
+        );
+        
+        // Consider nodes within 25px of the path
+        return distance < 25;
+      });
+      
+      // If we have obstacles, adjust the path
+      if (potentialObstacles.length > 0) {
+        // Calculate average position of obstacles
+        const avgObstacleX = potentialObstacles.reduce((sum, node) => 
+          sum + nodePositions[node.id].x, 0) / potentialObstacles.length;
+        
+        // Determine if we should route left or right of obstacles
+        const routeLeft = avgObstacleX > (parent.x + child.x) / 2;
+        
+        // Adjust curve strength
+        curve = Math.min(Math.abs(dx) * 0.7, Math.abs(dy) * 0.7) * (routeLeft ? -1 : 1);
+        
+        // For significant obstacles or complex paths
+        if (potentialObstacles.length > 1 || Math.abs(dy) > 150) {
+          // Create a path with intermediate control points
+          const ctrlX1 = parent.x + curve * 0.7;
+          const ctrlY1 = parent.y + dy * 0.3;
+          const ctrlX2 = child.x - curve * 0.7;
+          const ctrlY2 = child.y - dy * 0.3;
+          
+          return `M ${parent.x} ${parent.y} C ${ctrlX1} ${ctrlY1}, ${ctrlX2} ${ctrlY2}, ${child.x} ${child.y}`;
+        }
+      }
+      
+      // Standard curved path
+      return `M ${parent.x} ${parent.y} C ${parent.x + curve} ${midY}, ${child.x - curve} ${midY}, ${child.x} ${child.y}`;
+    };
+
     return timelineData
       .filter(node => node.parentIds && node.parentIds.length > 0)
       .flatMap(node => 
@@ -114,15 +268,9 @@ const Timeline: React.FC = () => {
           
           if (!parent || !child) return null;
           
-          // Calculate control points for curve
-          const midY = (parent.y + child.y) / 2;
-          const dx = child.x - parent.x;
-          const dy = child.y - parent.y;
-          const curve = Math.min(Math.abs(dx) * 0.5, Math.abs(dy) * 0.5) * Math.sign(dx);
-          
           return {
             id: `${parentId}-${node.id}`,
-            path: `M ${parent.x} ${parent.y} C ${parent.x + curve} ${midY}, ${child.x - curve} ${midY}, ${child.x} ${child.y}`,
+            path: createSmartPath(parent, child, parentId, node.id),
             parentId,
             childId: node.id,
             color: timelineBranches.find(b => b.id === node.branch)?.color || '#999'
@@ -145,7 +293,6 @@ const Timeline: React.FC = () => {
     }));
   }, []);
 
-  // Generate branch legend
   const branchLegend = React.useMemo(() => {
     return timelineBranches.map((branch, index) => ({
       ...branch,
@@ -197,7 +344,7 @@ const Timeline: React.FC = () => {
         <div className="flex justify-between items-center mb-2">
           <div className='flex flex-col items-left mb-1'>
             <h2 className="text-2xl font-bold">Timeline Color Key</h2>
-            <p className='text-gray-400'>Version: 0.24.0 (Work in Progress)</p>
+            <p className='text-gray-400'>Version: 0.42.0 (Work in Progress)</p>
           </div>
           <Link href="/about" className="text-blue-600 hover:text-blue-800 transition">
             About this Timeline &rarr;
@@ -276,6 +423,20 @@ const Timeline: React.FC = () => {
                 className="cursor-pointer transition-all duration-300"
                 style={{ opacity: hoveredNode && !isHighlighted ? 0.3 : 1 }}
               >
+                {/* Add background for text to prevent lines going through text (was a huge issue in the past)*/}
+                <rect
+                  x={-estimateTextWidth(node.title) / 2}
+                  y={-28}
+                  width={estimateTextWidth(node.title)}
+                  height={18}
+                  fill="white"
+                  opacity={0.8}
+                  rx={4}
+                  ry={4}
+                  className="transition-all duration-300"
+                  style={{ display: node.title.length > 0 ? 'block' : 'none' }}
+                />
+                
                 <circle
                   r={isHighlighted ? 12 : 8}
                   fill={branch?.color || '#999'}
@@ -299,7 +460,7 @@ const Timeline: React.FC = () => {
         </svg>
       </div>
       
-      {/* Details panel for selected node */}
+      {/* Details panel for a selected node */}
       {selectedNode && (
         <div className="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t-2 p-6 max-h-[50vh] overflow-y-auto">
           <button 
