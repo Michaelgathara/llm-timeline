@@ -13,7 +13,7 @@ const Timeline: React.FC = () => {
       if (typeof window !== 'undefined') {
         setDimensions({
           width: Math.max(1200, window.innerWidth - 100),
-          height: Math.max(1600, window.innerHeight * 2)
+          height: Math.max(2000, window.innerHeight * 2)
         });
       }
     };
