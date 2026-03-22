@@ -7,6 +7,7 @@
 }
 
 body {
+  min-height: 100vh;
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,
@@ -24,26 +25,38 @@ body {
   user-select: none;
 }
 
+.timeline-scroll,
+.details-panel {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #e2e8f0;
+}
+
+.timeline-scroll::-webkit-scrollbar,
+.details-panel::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.timeline-scroll::-webkit-scrollbar-track,
+.details-panel::-webkit-scrollbar-track {
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.timeline-scroll::-webkit-scrollbar-thumb,
+.details-panel::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 999px;
+  border: 2px solid #e2e8f0;
+}
+
+.timeline-scroll::-webkit-scrollbar-thumb:hover,
+.details-panel::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
 @media (max-width: 768px) {
   .timeline-container {
     overflow-x: auto;
   }
-}
-
-/* Custom scrollbar for the details panel */
-.details-panel::-webkit-scrollbar {
-  width: 6px;
-}
-
-.details-panel::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.details-panel::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
-}
-
-.details-panel::-webkit-scrollbar-thumb:hover {
-  background: #555;
 }
