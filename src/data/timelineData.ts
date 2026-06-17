@@ -20,11 +20,28 @@ export interface TimelineNode {
 
   const getSortableMonth = (month?: number) => month ?? 6;
 
-  const validateTimelineData = (nodes: TimelineNode[], branches: { id: string }[]) => {
+  export interface TimelineBranch {
+    id: string;
+    name: string;
+    color: string;
+  }
+
+  const validateTimelineData = (nodes: TimelineNode[], branches: TimelineBranch[]) => {
     const branchIds = new Set(branches.map(branch => branch.id));
     const nodeById = new Map(nodes.map(node => [node.id, node]));
+    const seenIds = new Set<string>();
 
     nodes.forEach(node => {
+      if (seenIds.has(node.id)) {
+        throw new Error(`Timeline node "${node.id}" is duplicated.`);
+      }
+
+      seenIds.add(node.id);
+
+      if (node.month && (node.month < 1 || node.month > 12)) {
+        throw new Error(`Timeline node "${node.id}" uses invalid month "${node.month}".`);
+      }
+
       if (!branchIds.has(node.branch)) {
         throw new Error(`Timeline node "${node.id}" uses unknown branch "${node.branch}".`);
       }
@@ -312,7 +329,7 @@ export interface TimelineNode {
       year: 2023,
       month: 12,
       description: "Google's efficient on-device variant of Gemini designed for mobile and edge computing.",
-      branch: "decoder-only",
+      branch: "multimodal",
       parentIds: ["gemini"],
       innovations: [
         "Highly optimized for mobile hardware",
@@ -537,7 +554,7 @@ export interface TimelineNode {
     },
     {
       id: "llama3",
-      title: "LLaMA 3",
+      title: "Llama 3",
       year: 2024,
       month: 4,
       description: "Meta's updated series launched stronger 8B and 70B open-weight models with major gains in instruction following and reasoning.",
@@ -663,11 +680,11 @@ export interface TimelineNode {
       title: "Claude 3.7 Sonnet",
       year: 2025,
       month: 2,
-      description: "Anthropic's latest model with specialized 'reasoning mode' for complex problem-solving.",
-      branch: "decoder-only",
+      description: "Anthropic introduced the first widely deployed hybrid reasoning Claude model, combining instant responses with extended thinking in one system.",
+      branch: "reasoning",
       parentIds: ["claude3_5"],
       innovations: [
-        "Dedicated reasoning mode for extended thinking",
+        "Hybrid reasoning model with optional extended thinking",
         "Improved mathematical and coding capabilities",
         "Enhanced multimodal understanding",
         "Better tool use and function calling"
@@ -711,12 +728,12 @@ export interface TimelineNode {
     },
     {
       id: "llama4",
-      title: "LLaMA 4: Mixture-of-Experts",
+      title: "Llama 4: Scout and Maverick",
       year: 2025,
       month: 4,
-      description: "Meta's latest series incorporates Mixture-of-Experts at scale with native multimodality.",
+      description: "Meta's Llama 4 launch introduced Scout and Maverick, its first open-weight natively multimodal MoE models with ultra-long context.",
       branch: "mixture-of-experts",
-      parentIds: ["llama3", "switch-transformer"],
+      parentIds: ["llama3_3", "switch-transformer"],
       innovations: [
         "Mixture-of-Experts architecture for efficiency",
         "Native multimodality (text, image, speech)",
@@ -726,11 +743,365 @@ export interface TimelineNode {
       modelSize: "Scout: 17B active (109B total), Maverick: 17B active (400B total)",
       impact: "First widely available MoE LLM combining scale and efficiency.",
       link: "https://ai.meta.com/blog/llama-4-multimodal-intelligence/"
+    },
+    {
+      id: "gemini1_5",
+      title: "Gemini 1.5 Pro and Flash",
+      year: 2024,
+      month: 5,
+      description: "Google expanded Gemini with long-context 1.5 Pro improvements and launched 1.5 Flash, its faster, lower-cost multimodal workhorse.",
+      branch: "multimodal",
+      parentIds: ["gemini"],
+      innovations: [
+        "1M-token multimodal context window in public preview",
+        "Fast distilled Flash variant for high-volume workloads",
+        "Broader long-context developer access through AI Studio and Vertex AI"
+      ],
+      impact: "Made long-context multimodal models practical for mainstream developer workflows.",
+      link: "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-gemma-developer-updates-may-2024/"
+    },
+    {
+      id: "llama3_1",
+      title: "Llama 3.1",
+      year: 2024,
+      month: 7,
+      description: "Meta upgraded Llama 3 with 128K context, multilingual support, and the 405B model that pushed open weights into frontier territory.",
+      branch: "open-source",
+      parentIds: ["llama3"],
+      innovations: [
+        "405B frontier open-weight model",
+        "128K context window",
+        "Stronger tool use and multilingual capabilities"
+      ],
+      modelSize: "8B, 70B, and 405B parameters",
+      impact: "Marked the first openly available model family broadly positioned against top frontier closed models.",
+      link: "https://ai.meta.com/blog/meta-llama-3-1/"
+    },
+    {
+      id: "o1_preview",
+      title: "OpenAI o1-preview",
+      year: 2024,
+      month: 9,
+      description: "OpenAI introduced its first public reasoning-series model, built to spend more time thinking before responding on hard STEM and coding tasks.",
+      branch: "reasoning",
+      parentIds: ["gpt4o"],
+      innovations: [
+        "Reasoning-first inference with deliberate multi-step problem solving",
+        "Public launch of the o-series",
+        "Strong gains on math, coding, and science benchmarks"
+      ],
+      impact: "Shifted the frontier conversation from pure next-token scaling toward explicit reasoning behavior.",
+      link: "https://openai.com/index/introducing-openai-o1-preview/"
+    },
+    {
+      id: "qwen2_5",
+      title: "Qwen 2.5",
+      year: 2024,
+      month: 9,
+      description: "Alibaba's Qwen 2.5 series expanded the open Qwen family across more sizes and stronger multilingual, coding, and instruction-following performance.",
+      branch: "open-source",
+      innovations: [
+        "Broader open model size range",
+        "Improved multilingual performance",
+        "Stronger instruction following and coding"
+      ],
+      impact: "Established Qwen as a top-tier open model family rather than a niche regional alternative.",
+      link: "https://github.com/QwenLM/Qwen3"
+    },
+    {
+      id: "llama3_2",
+      title: "Llama 3.2",
+      year: 2024,
+      month: 9,
+      description: "Meta extended the Llama line with multimodal vision models and lightweight edge models designed for mobile and embedded deployment.",
+      branch: "multimodal",
+      parentIds: ["llama3_1"],
+      innovations: [
+        "Meta's first multimodal Llama models",
+        "On-device 1B and 3B edge variants",
+        "11B and 90B vision-capable open models"
+      ],
+      modelSize: "1B, 3B, 11B, and 90B parameters",
+      impact: "Brought the Llama ecosystem decisively into multimodal and edge deployment use cases.",
+      link: "https://ai.meta.com/blog/llama-3-2-connect-2024-vision-edge-mobile-devices/"
+    },
+    {
+      id: "claude3_5_new",
+      title: "Claude 3.5 Sonnet (New) and Computer Use",
+      year: 2024,
+      month: 10,
+      description: "Anthropic upgraded Claude 3.5 Sonnet and paired it with computer use beta, pushing Claude from chat assistant toward action-taking agent workflows.",
+      branch: "reasoning",
+      parentIds: ["claude3_5"],
+      innovations: [
+        "Major coding improvement over the initial 3.5 Sonnet release",
+        "Computer use beta for desktop-style task execution",
+        "Stronger agentic interaction with external tools and interfaces"
+      ],
+      impact: "Helped normalize the idea of language models acting directly on software rather than only generating text.",
+      link: "https://www.anthropic.com/news/3-5-models-and-computer-use"
+    },
+    {
+      id: "claude3_5_haiku",
+      title: "Claude 3.5 Haiku",
+      year: 2024,
+      month: 11,
+      description: "Anthropic shipped a faster, cheaper Claude 3.5-tier model that brought strong coding and reasoning performance to a lightweight serving tier.",
+      branch: "decoder-only",
+      parentIds: ["claude3"],
+      innovations: [
+        "Haiku-tier speed with near-Opus-class benchmark results",
+        "Stronger coding efficiency at low latency",
+        "Lower-cost access to modern Claude 3.5 capabilities"
+      ],
+      impact: "Compressed the quality gap between premium and fast-serving model tiers.",
+      link: "https://docs.anthropic.com/en/release-notes/api"
+    },
+    {
+      id: "o1",
+      title: "OpenAI o1",
+      year: 2024,
+      month: 12,
+      description: "OpenAI moved its reasoning line beyond preview with a more capable o1 release that added vision, function calling, and structured developer tooling.",
+      branch: "reasoning",
+      parentIds: ["o1_preview"],
+      innovations: [
+        "Reasoning model with function calling and Structured Outputs",
+        "Vision-enabled reasoning",
+        "Developer messages and stronger API integration"
+      ],
+      impact: "Turned reasoning models from an experimental curiosity into something developers could build serious systems around.",
+      link: "https://openai.com/index/o1-and-new-tools-for-developers/"
+    },
+    {
+      id: "gemini2_0",
+      title: "Gemini 2.0 Flash",
+      year: 2024,
+      month: 12,
+      description: "Google launched Gemini 2.0 Flash as its first Gemini model explicitly framed for the agentic era, with native tool use and multimodal output.",
+      branch: "multimodal",
+      parentIds: ["gemini1_5"],
+      innovations: [
+        "Native tool use including Search and code execution",
+        "Multimodal output with image generation and speech",
+        "Agent-oriented low-latency workhorse model"
+      ],
+      impact: "Marked Google's shift from long-context assistants toward tool-using, agent-capable models.",
+      link: "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/google-gemini-ai-update-december-2024/"
+    },
+    {
+      id: "llama3_3",
+      title: "Llama 3.3 70B",
+      year: 2024,
+      month: 12,
+      description: "Meta closed 2024 with a more efficient open text model that approached Llama 3.1 405B-level usefulness at far lower serving cost.",
+      branch: "open-source",
+      parentIds: ["llama3_2"],
+      innovations: [
+        "405B-class utility in a 70B serving footprint",
+        "Stronger open text-only performance efficiency",
+        "Lower-cost deployment for advanced open assistants"
+      ],
+      modelSize: "70B parameters",
+      impact: "Reinforced the trend that better data and post-training could matter as much as raw parameter count.",
+      link: "https://ai.meta.com/blog/future-of-ai-built-with-llama/"
+    },
+    {
+      id: "deepseek_v3",
+      title: "DeepSeek V3",
+      year: 2024,
+      month: 12,
+      description: "DeepSeek released a large open Mixture-of-Experts model that closed much of the gap between open and closed frontier systems at far lower serving cost.",
+      branch: "mixture-of-experts",
+      parentIds: ["switch-transformer", "llama3_1"],
+      innovations: [
+        "671B-parameter MoE with 37B active parameters",
+        "Strong frontier-class open performance",
+        "High throughput with open weights and technical report"
+      ],
+      impact: "Reset expectations for how far an open MoE model could push general-purpose capability and cost efficiency.",
+      link: "https://api-docs.deepseek.com/news/news1226"
+    },
+    {
+      id: "deepseek_r1",
+      title: "DeepSeek R1",
+      year: 2025,
+      month: 1,
+      description: "DeepSeek followed V3 with an open reasoning model trained via large-scale reinforcement learning and positioned directly against OpenAI's o-series.",
+      branch: "reasoning",
+      parentIds: ["deepseek_v3", "o1"],
+      innovations: [
+        "Open reasoning model trained with large-scale RL",
+        "MIT-licensed open weights and distilled variants",
+        "Competitive math and coding performance against o1-class systems"
+      ],
+      impact: "Proved that frontier reasoning behavior was no longer confined to closed labs.",
+      link: "https://api-docs.deepseek.com/news/news250120"
+    },
+    {
+      id: "gpt4_5",
+      title: "GPT-4.5",
+      year: 2025,
+      month: 2,
+      description: "OpenAI released GPT-4.5 as a research preview focused on broader knowledge, stronger conversational quality, and more natural interaction.",
+      branch: "decoder-only",
+      parentIds: ["gpt4o"],
+      innovations: [
+        "Scaled-up GPT-series pretraining beyond GPT-4o",
+        "Improved writing quality, nuance, and emotional intelligence",
+        "Research preview for general-purpose chat quality"
+      ],
+      impact: "Showed that scaling general-purpose chat models still mattered even as reasoning models took center stage.",
+      link: "https://openai.com/index/introducing-gpt-4-5/"
+    },
+    {
+      id: "gemini2_5",
+      title: "Gemini 2.5 Pro",
+      year: 2025,
+      month: 3,
+      description: "Google introduced Gemini 2.5 Pro as a thinking model optimized for complex reasoning, coding, and long-context multimodal problem solving.",
+      branch: "multimodal",
+      parentIds: ["gemini2_0"],
+      innovations: [
+        "Thinking model with explicit reasoning behavior",
+        "State-of-the-art long-context multimodal performance",
+        "Stronger coding and agentic workflow support"
+      ],
+      impact: "Made reasoning a first-class capability inside Google's flagship multimodal line.",
+      link: "https://deepmind.google/blog/gemini-25-our-world-leading-model-is-getting-even-better/"
+    },
+    {
+      id: "gpt4_1",
+      title: "GPT-4.1",
+      year: 2025,
+      month: 4,
+      description: "OpenAI refreshed its GPT line with GPT-4.1, emphasizing stronger coding, better instruction following, and a 1M-token API context window.",
+      branch: "decoder-only",
+      parentIds: ["gpt4o"],
+      innovations: [
+        "1M-token API context window",
+        "Major coding and instruction-following gains",
+        "Mini and nano variants for broader deployment tiers"
+      ],
+      impact: "Reasserted the GPT family as a practical production line even while the o-series pushed reasoning.",
+      link: "https://openai.com/index/gpt-4-1/"
+    },
+    {
+      id: "o3_o4_mini",
+      title: "OpenAI o3 and o4-mini",
+      year: 2025,
+      month: 4,
+      description: "OpenAI expanded its reasoning line with o3 and o4-mini, pairing stronger deliberate reasoning with tool-rich, agentic use inside ChatGPT.",
+      branch: "reasoning",
+      parentIds: ["o1"],
+      innovations: [
+        "Stronger reasoning with full tool access",
+        "Agentic use of web, code, files, and images",
+        "Smaller o4-mini tier for cheaper reasoning workloads"
+      ],
+      impact: "Pushed reasoning models from benchmark specialists toward full-stack agent behavior.",
+      link: "https://openai.com/index/introducing-o3-and-o4-mini/"
+    },
+    {
+      id: "qwen3",
+      title: "Qwen3",
+      year: 2025,
+      month: 4,
+      description: "Alibaba's Qwen3 family fused dense and MoE open models with hybrid reasoning, tool use, and broad multilingual support.",
+      branch: "open-source",
+      parentIds: ["qwen2_5"],
+      innovations: [
+        "Hybrid reasoning modes across dense and MoE variants",
+        "Native support for agent and tool-oriented workflows",
+        "119-language open model release"
+      ],
+      impact: "Moved Qwen into the top tier of globally relevant open model ecosystems.",
+      link: "https://github.com/QwenLM/Qwen3"
+    },
+    {
+      id: "claude4",
+      title: "Claude 4: Sonnet and Opus",
+      year: 2025,
+      month: 5,
+      description: "Anthropic launched Claude 4 with Sonnet 4 and Opus 4, extending hybrid reasoning into stronger coding, agent workflows, and long-horizon execution.",
+      branch: "reasoning",
+      parentIds: ["claude3_7"],
+      innovations: [
+        "Next-generation hybrid reasoning for coding and agents",
+        "Stronger long-running task reliability",
+        "Frontier Claude split across practical Sonnet and flagship Opus tiers"
+      ],
+      impact: "Solidified Anthropic's position at the frontier of coding-focused agent models.",
+      link: "https://www.anthropic.com/news/claude-4"
+    },
+    {
+      id: "magistral",
+      title: "Magistral",
+      year: 2025,
+      month: 6,
+      description: "Mistral entered the reasoning-model race with Magistral, releasing both an open small model and a stronger enterprise variant.",
+      branch: "reasoning",
+      parentIds: ["mistral"],
+      innovations: [
+        "First dedicated Mistral reasoning model family",
+        "Open small model paired with enterprise medium variant",
+        "Transparent, multilingual reasoning focus"
+      ],
+      impact: "Showed that European frontier labs were moving from efficient base models into dedicated reasoning systems.",
+      link: "https://mistral.ai/news/magistral"
+    },
+    {
+      id: "gemini3_1_pro",
+      title: "Gemini 3.1 Pro",
+      year: 2026,
+      month: 2,
+      description: "Google advanced the Gemini line again with 3.1 Pro, a more capable multimodal reasoning model aimed at complex, agentic, and strategic tasks.",
+      branch: "multimodal",
+      parentIds: ["gemini2_5"],
+      innovations: [
+        "Stronger multimodal reasoning across large heterogeneous inputs",
+        "Broader deployment across Gemini app, NotebookLM, and developer platforms",
+        "Preview release focused on complex real-world problem solving"
+      ],
+      impact: "Extended Google's flagship line into the 2026 generation of agent-oriented multimodal reasoning systems.",
+      link: "https://deepmind.google/blog/gemini-3-1-pro-a-smarter-model-for-your-most-complex-tasks/"
+    },
+    {
+      id: "deepseek_v4",
+      title: "DeepSeek V4 Preview",
+      year: 2026,
+      month: 4,
+      description: "DeepSeek launched V4 Preview with 1M context, dual thinking modes, and new Pro/Flash variants aimed at cost-effective agentic performance.",
+      branch: "reasoning",
+      parentIds: ["deepseek_r1"],
+      innovations: [
+        "1M-token context window",
+        "Thinking and non-thinking dual-mode inference",
+        "Separate Pro and Flash variants with open-source release"
+      ],
+      impact: "Pushed open reasoning systems further into long-context, agent-ready territory at aggressive price points.",
+      link: "https://api-docs.deepseek.com/news/news260424"
+    },
+    {
+      id: "claude_opus_4_8",
+      title: "Claude Opus 4.8",
+      year: 2026,
+      month: 5,
+      description: "Anthropic upgraded its flagship Opus line again with Opus 4.8, improving consistency, agentic coding, and high-autonomy reasoning work.",
+      branch: "reasoning",
+      parentIds: ["claude4"],
+      innovations: [
+        "Improved long-horizon coding and agent reliability",
+        "Adaptive thinking with a 1M-token context window",
+        "Faster execution mode at premium throughput"
+      ],
+      impact: "Kept Anthropic's flagship line current in the 2026 generation of agent-oriented frontier models.",
+      link: "https://www.anthropic.com/news/claude-opus-4-8"
     }
   ];
   
   // TODO: Look into more colors cause some of these are lowkey repeats on low contrast screens
-  export const timelineBranches = [
+  export const timelineBranches: TimelineBranch[] = [
     { id: "foundation", name: "Foundation", color: "#4285F4" }, // Google Blue
     { id: "decoder-only", name: "Decoder-Only Models", color: "#EA4335" }, // Red
     { id: "encoder-only", name: "Encoder-Only Models", color: "#FBBC05" }, // Yellow
@@ -740,7 +1111,11 @@ export interface TimelineNode {
     { id: "alignment", name: "Alignment Techniques", color: "#E67E22" }, // Orange
     { id: "theory", name: "Theoretical Advances", color: "#1ABC9C" }, // Teal
     { id: "multimodal", name: "Multimodal Models", color: "#9B59B6" }, // Purple
-    { id: "hybrid", name: "Hybrid Approaches", color: "#7F8C8D" } // Gray
+    { id: "hybrid", name: "Hybrid Approaches", color: "#7F8C8D" }, // Gray
+    { id: "reasoning", name: "Reasoning Models", color: "#C0392B" } // Dark red
   ];
+
+  export const timelineStartYear = Math.min(...timelineData.map(node => node.year));
+  export const timelineEndYear = Math.max(...timelineData.map(node => node.year));
 
   validateTimelineData(timelineData, timelineBranches);

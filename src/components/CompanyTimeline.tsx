@@ -3,7 +3,13 @@
  */
 
 import React, { useState, useEffect, useRef } from 'react';
-import { TimelineNode, timelineData, timelineBranches } from '../data/timelineData';
+import {
+  TimelineNode,
+  timelineData,
+  timelineBranches,
+  timelineStartYear,
+  timelineEndYear,
+} from '../data/timelineData';
 
 
 interface CompanyData {
@@ -21,6 +27,10 @@ const companyMapping: Record<string, string> = {
   "palm2": "google",
   "gemini": "google",
   "gemini-nano": "google",
+  "gemini1_5": "google",
+  "gemini2_0": "google",
+  "gemini2_5": "google",
+  "gemini3_1_pro": "google",
   
   // OpenAI
   "gpt1": "openai",
@@ -34,6 +44,11 @@ const companyMapping: Record<string, string> = {
   "sora": "openai",
   "multimodal-foundation": "openai",
   "dalle3": "openai",
+  "o1_preview": "openai",
+  "o1": "openai",
+  "gpt4_5": "openai",
+  "gpt4_1": "openai",
+  "o3_o4_mini": "openai",
   
   // Meta
   "opt": "meta",
@@ -41,6 +56,9 @@ const companyMapping: Record<string, string> = {
   "llama2": "meta",
   "llama3": "meta",
   "llama4": "meta",
+  "llama3_1": "meta",
+  "llama3_2": "meta",
+  "llama3_3": "meta",
   
   // Anthropic
   "constitutional-ai": "anthropic",
@@ -49,10 +67,23 @@ const companyMapping: Record<string, string> = {
   "claude3": "anthropic",
   "claude3_5": "anthropic",
   "claude3_7": "anthropic",
+  "claude3_5_new": "anthropic",
+  "claude3_5_haiku": "anthropic",
+  "claude4": "anthropic",
+  "claude_opus_4_8": "anthropic",
   
   // Microsoft
   "phi": "microsoft",
   "megatron": "microsoft",
+
+  // DeepSeek
+  "deepseek_v3": "deepseek",
+  "deepseek_r1": "deepseek",
+  "deepseek_v4": "deepseek",
+
+  // Alibaba / Qwen
+  "qwen2_5": "alibaba",
+  "qwen3": "alibaba",
   
   // Foundation/Base Models
   "transformer": "foundation",
@@ -64,6 +95,7 @@ const companyMapping: Record<string, string> = {
   // Other companies
   "falcon": "tii",
   "mistral": "mistral",
+  "magistral": "mistral",
   "flan": "other",
   "alpaca": "stanford",
   "midjourney": "midjourney"
@@ -76,6 +108,8 @@ const companies: CompanyData[] = [
   { id: "meta", name: "Meta", color: "#3498DB" },
   { id: "anthropic", name: "Anthropic", color: "#9B59B6" },
   { id: "microsoft", name: "Microsoft", color: "#1ABC9C" },
+  { id: "deepseek", name: "DeepSeek", color: "#16A085" },
+  { id: "alibaba", name: "Alibaba / Qwen", color: "#D35400" },
   { id: "mistral", name: "Mistral AI", color: "#8E44AD" },
   { id: "tii", name: "TII", color: "#E67E22" },
   { id: "stanford", name: "Stanford", color: "#27AE60" },
@@ -83,8 +117,6 @@ const companies: CompanyData[] = [
 ];
 
 
-const YEAR_START = 2017;
-const YEAR_END = 2025;
 const YEAR_WIDTH = 180; 
 const COMPANY_HEIGHT = 120; 
 const LABEL_WIDTH = 180; 
@@ -95,7 +127,7 @@ const CompanyTimeline: React.FC = () => {
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ 
-    width: (YEAR_END - YEAR_START + 1) * YEAR_WIDTH + LABEL_WIDTH,
+    width: (timelineEndYear - timelineStartYear + 1) * YEAR_WIDTH + LABEL_WIDTH,
     height: companies.length * COMPANY_HEIGHT + HEADER_HEIGHT
   });
   
@@ -103,7 +135,7 @@ const CompanyTimeline: React.FC = () => {
     const updateDimensions = () => {
       if (typeof window !== 'undefined') {
         setDimensions({
-          width: Math.max((YEAR_END - YEAR_START + 1) * YEAR_WIDTH + LABEL_WIDTH, window.innerWidth - 100),
+          width: Math.max((timelineEndYear - timelineStartYear + 1) * YEAR_WIDTH + LABEL_WIDTH, window.innerWidth - 100),
           height: companies.length * COMPANY_HEIGHT + HEADER_HEIGHT
         });
       }
@@ -123,7 +155,7 @@ const CompanyTimeline: React.FC = () => {
     type YearCompanyMap = Record<number, Record<string, TimelineNode[]>>;
     const yearCompanyNodes: YearCompanyMap = {};
     
-    for (let year = YEAR_START; year <= YEAR_END; year++) {
+    for (let year = timelineStartYear; year <= timelineEndYear; year++) {
       yearCompanyNodes[year] = {};
       companies.forEach(company => {
         yearCompanyNodes[year][company.id] = [];
@@ -132,14 +164,17 @@ const CompanyTimeline: React.FC = () => {
     
     timelineData.forEach(node => {
       const company = companyMapping[node.id] || "other";
+      if (!yearCompanyNodes[node.year]) {
+        yearCompanyNodes[node.year] = {};
+      }
       if (!yearCompanyNodes[node.year][company]) {
         yearCompanyNodes[node.year][company] = [];
       }
       yearCompanyNodes[node.year][company].push(node);
     });
     
-    for (let year = YEAR_START; year <= YEAR_END; year++) {
-      const yearIndex = year - YEAR_START;
+    for (let year = timelineStartYear; year <= timelineEndYear; year++) {
+      const yearIndex = year - timelineStartYear;
       const cellLeft = yearIndex * YEAR_WIDTH + LABEL_WIDTH;
       const cellRight = cellLeft + YEAR_WIDTH;
       const cellCenterX = (cellLeft + cellRight) / 2;
@@ -232,7 +267,7 @@ const CompanyTimeline: React.FC = () => {
 
   const timelineYears = React.useMemo(() => {
     const years = [];
-    for (let year = YEAR_START; year <= YEAR_END; year++) {
+    for (let year = timelineStartYear; year <= timelineEndYear; year++) {
       years.push(year);
     }
     

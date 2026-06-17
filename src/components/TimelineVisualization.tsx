@@ -1,7 +1,17 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { TimelineNode, timelineData, timelineBranches } from '../data/timelineData';
+import {
+  TimelineNode,
+  timelineData,
+  timelineBranches,
+  timelineStartYear,
+  timelineEndYear,
+} from '../data/timelineData';
+
+const YEAR_HEIGHT = 100;
+const TOP_PADDING = 50;
+const BOTTOM_PADDING = 60;
 
 const TimelineVisualization: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
@@ -23,16 +33,14 @@ const TimelineVisualization: React.FC = () => {
   
   const calculatePositions = () => {
     const positions: Record<string, { x: number; y: number }> = {};
-    const YEAR_HEIGHT = 80;
-    const YEAR_START = 2017;
     const BRANCH_WIDTH = width / timelineBranches.length;
     
     timelineData.forEach(node => {
       const branchIndex = timelineBranches.findIndex(b => b.id === node.branch);
       const baseX = BRANCH_WIDTH * (branchIndex + 0.5);
-      const yearOffset = node.year - YEAR_START;
+      const yearOffset = node.year - timelineStartYear;
       const monthOffset = node.month ? (node.month - 1) / 12 : 0.5;
-      const y = (yearOffset + monthOffset) * YEAR_HEIGHT + 50;
+      const y = TOP_PADDING + (yearOffset + monthOffset) * YEAR_HEIGHT;
       
       positions[node.id] = { x: baseX, y };
     });
@@ -91,7 +99,7 @@ const TimelineVisualization: React.FC = () => {
     ? timelineData.find(node => node.id === selectedNode) 
     : null;
   
-  const height = 700;
+  const height = (timelineEndYear - timelineStartYear + 1) * YEAR_HEIGHT + TOP_PADDING + BOTTOM_PADDING;
   
   return (
     <div className="flex flex-col w-full">
@@ -110,12 +118,12 @@ const TimelineVisualization: React.FC = () => {
         </div>
       </div>
     
-      <div className="relative bg-white shadow-md rounded-lg p-4 overflow-hidden" style={{ height }}>
-        <svg width={width} height={height} className="absolute top-0 left-0">
+      <div className="bg-white shadow-md rounded-lg p-4 overflow-auto" style={{ maxHeight: 900 }}>
+        <svg width={width} height={height}>
           {/* Year grid lines */}
-          {Array.from({ length: 9 }).map((_, i) => {
-            const year = 2017 + i;
-            const y = (i * 80) + 50;
+          {Array.from({ length: timelineEndYear - timelineStartYear + 1 }).map((_, i) => {
+            const year = timelineStartYear + i;
+            const y = TOP_PADDING + (i * YEAR_HEIGHT);
             return (
               <g key={`year-${year}`}>
                 <line 

@@ -1,19 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { TimelineNode, timelineData, timelineBranches } from '../data/timelineData';
+import {
+  TimelineNode,
+  timelineData,
+  timelineBranches,
+  timelineStartYear,
+  timelineEndYear,
+} from '../data/timelineData';
+
+const YEAR_HEIGHT = 280;
+const TOP_PADDING = 80;
+const BOTTOM_PADDING = 240;
+const MIN_BRANCH_WIDTH = 165;
+const HORIZONTAL_SCROLL_BUFFER = 520;
+
+const getRequiredWidth = (viewportWidth: number) =>
+  Math.max(1800, timelineBranches.length * MIN_BRANCH_WIDTH, viewportWidth + HORIZONTAL_SCROLL_BUFFER);
+
+const getRequiredHeight = (viewportHeight: number) =>
+  Math.max(
+    (timelineEndYear - timelineStartYear + 1) * YEAR_HEIGHT + TOP_PADDING + BOTTOM_PADDING,
+    Math.round(viewportHeight * 2.35)
+  );
 
 const Timeline: React.FC = () => {
   const [selectedNode, setSelectedNode] = useState<TimelineNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 1200, height: 1600 });
+  const [dimensions, setDimensions] = useState({
+    width: getRequiredWidth(1280),
+    height: getRequiredHeight(1000),
+  });
   
   useEffect(() => {
     const updateDimensions = () => {
       if (typeof window !== 'undefined') {
         setDimensions({
-          width: Math.max(1200, window.innerWidth - 100),
-          height: Math.max(2000, window.innerHeight * 2)
+          width: getRequiredWidth(window.innerWidth),
+          height: getRequiredHeight(window.innerHeight),
         });
       }
     };
@@ -34,9 +58,6 @@ const Timeline: React.FC = () => {
 
   const nodePositions = React.useMemo(() => {
     const positions: Record<string, { x: number; y: number }> = {};
-    const YEAR_HEIGHT = 200;
-    const YEAR_START = 2017;
-    const YEAR_END = 2025;
     const BRANCH_WIDTH = dimensions.width / timelineBranches.length;
     const MIN_X_SPACING = 150;
 
@@ -46,9 +67,9 @@ const Timeline: React.FC = () => {
       const baseX = BRANCH_WIDTH * (branchIndex + 0.5);
       
       // Calculate year offset (add month if available for more precise positioning)
-      const yearOffset = node.year - YEAR_START;
+      const yearOffset = node.year - timelineStartYear;
       const monthOffset = node.month ? (node.month - 1) / 12 : 0.5;
-      const y = yearOffset * YEAR_HEIGHT + monthOffset * YEAR_HEIGHT;
+      const y = TOP_PADDING + yearOffset * YEAR_HEIGHT + monthOffset * YEAR_HEIGHT;
       
       // Store position
       positions[node.id] = { x: baseX, y: y };
@@ -282,14 +303,12 @@ const Timeline: React.FC = () => {
 
   // Generate timeline axis
   const timelineAxis = React.useMemo(() => {
-    const years = [];
-    for (let year = 2017; year <= 2025; year++) {
-      years.push(year);
-    }
-    
-    return years.map(year => ({
+    return Array.from(
+      { length: timelineEndYear - timelineStartYear + 1 },
+      (_, index) => timelineStartYear + index
+    ).map(year => ({
       year,
-      y: (year - 2017) * 200,
+      y: TOP_PADDING + (year - timelineStartYear) * YEAR_HEIGHT,
     }));
   }, []);
 
