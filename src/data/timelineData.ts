@@ -17,6 +17,36 @@ export interface TimelineNode {
     link?: string; // Optional link to more information
     parentIds?: string[]; // IDs of parent nodes (for branching)
   }
+
+  const getSortableMonth = (month?: number) => month ?? 6;
+
+  const validateTimelineData = (nodes: TimelineNode[], branches: { id: string }[]) => {
+    const branchIds = new Set(branches.map(branch => branch.id));
+    const nodeById = new Map(nodes.map(node => [node.id, node]));
+
+    nodes.forEach(node => {
+      if (!branchIds.has(node.branch)) {
+        throw new Error(`Timeline node "${node.id}" uses unknown branch "${node.branch}".`);
+      }
+
+      (node.parentIds || []).forEach(parentId => {
+        const parent = nodeById.get(parentId);
+        if (!parent) {
+          throw new Error(`Timeline node "${node.id}" references missing parent "${parentId}".`);
+        }
+
+        const parentAfterChild =
+          parent.year > node.year ||
+          (parent.year === node.year && getSortableMonth(parent.month) > getSortableMonth(node.month));
+
+        if (parentAfterChild) {
+          throw new Error(
+            `Timeline node "${node.id}" references parent "${parentId}" from a later date.`
+          );
+        }
+      });
+    });
+  };
   
   export const timelineData: TimelineNode[] = [
     {
@@ -121,7 +151,7 @@ export interface TimelineNode {
       id: "rag",
       title: "Retrieval-Augmented Generation (RAG)",
       year: 2020,
-      month: 9,
+      month: 5,
       description: "RAG combined parametric knowledge with non-parametric retrieval to enhance factual accuracy.",
       branch: "hybrid",
       parentIds: ["transformer"],
@@ -139,7 +169,7 @@ export interface TimelineNode {
       month: 1,
       description: "Kaplan et al. formalized empirical scaling laws showing predictable improvements with model size, data, and compute.",
       branch: "theory",
-      parentIds: ["gpt3"],
+      parentIds: ["gpt2"],
       innovations: [
         "Power-law relationships between model performance and resources",
         "Optimal allocation of compute budgets"
@@ -182,7 +212,7 @@ export interface TimelineNode {
       id: "instructgpt",
       title: "InstructGPT: RLHF Alignment",
       year: 2022,
-      month: 1,
+      month: 3,
       description: "OpenAI used Reinforcement Learning from Human Feedback to align language models with human preferences.",
       branch: "alignment",
       parentIds: ["gpt3"],
@@ -507,18 +537,18 @@ export interface TimelineNode {
     },
     {
       id: "llama3",
-      title: "LLaMA 3: Continued Scaling",
+      title: "LLaMA 3",
       year: 2024,
       month: 4,
-      description: "Meta's updated series included a 405B parameter model approaching GPT-4's performance.",
+      description: "Meta's updated series launched stronger 8B and 70B open-weight models with major gains in instruction following and reasoning.",
       branch: "open-source",
       parentIds: ["llama2"],
       innovations: [
         "Enhanced tokenizer (128K vocabulary)",
-        "Improved multilingual capabilities",
-        "More training data (~15T tokens)"
+        "Much larger training corpus (~15T tokens)",
+        "Stronger post-training for assistant behavior"
       ],
-      modelSize: "8B, 70B, and 405B parameters",
+      modelSize: "8B and 70B parameters",
       link: "https://ai.meta.com/blog/meta-llama-3/"
     },
     {
@@ -543,7 +573,7 @@ export interface TimelineNode {
       id: "gpt4o",
       title: "GPT-4o: Omni Model",
       year: 2024,
-      month: 8,
+      month: 5,
       description: "OpenAI's GPT-4o ('omni') combined text, vision, and audio in a faster, cheaper model matching GPT-4 Turbo performance.",
       branch: "multimodal",
       parentIds: ["gpt4"],
@@ -559,10 +589,10 @@ export interface TimelineNode {
     },
     {
       id: "claude3_5",
-      title: "Claude 3.5: Sonnet and Haiku",
+      title: "Claude 3.5 Sonnet",
       year: 2024,
-      month: 8,
-      description: "Anthropic's mid-cycle update adding significant reasoning improvements and extended context handling.",
+      month: 6,
+      description: "Anthropic's Claude 3.5 Sonnet improved reasoning, coding, and vision performance while keeping Sonnet-class latency and pricing.",
       branch: "decoder-only",
       parentIds: ["claude3"],
       innovations: [
@@ -572,8 +602,8 @@ export interface TimelineNode {
         "Better multimodal comprehension"
       ],
       modelSize: "Undisclosed",
-      impact: "Established new SOTA on various reasoning benchmarks while maintaining competitive pricing.",
-      link: "https://www.anthropic.com/claude/haiku"
+      impact: "Raised the practical quality bar for coding and reasoning workloads without requiring a flagship-tier price point.",
+      link: "https://www.anthropic.com/news/claude-3-5-sonnet"
     },
     {
       id: "gpt4_turbo",
@@ -712,3 +742,5 @@ export interface TimelineNode {
     { id: "multimodal", name: "Multimodal Models", color: "#9B59B6" }, // Purple
     { id: "hybrid", name: "Hybrid Approaches", color: "#7F8C8D" } // Gray
   ];
+
+  validateTimelineData(timelineData, timelineBranches);
